@@ -1,0 +1,18 @@
+name: LunShop
+version: '1.3-SNAPSHOT'
+main: net.lunprojects.lunShop.LunShop
+api-version: '1.21.11'
+commands:
+  shop:
+    description: Open up the LunShop Menu
+    usage: /shop
+  addMoney:
+    description: Adds money to a player's balance (ADMIN ONLY)
+    usage: /addMoney <player> <amount>
+    permission: lunshop.admin
+  shopChest:
+    description: Gives you a auto-sell chest.
+    usage: /shopChest
+  pay:
+    description: Pay another player
+    usage: /pay <player> <amount>

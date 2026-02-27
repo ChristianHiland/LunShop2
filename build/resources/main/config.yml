@@ -1,0 +1,52 @@
+shop-items:
+  - name: "DIAMOND"
+    buy-price: 500
+    sell-price: 250
+  - name: "EMERALD"
+    buy-price: 300
+    sell-price: 150
+  - name: "COBBLESTONE"
+    buy-price: 10
+    sell-price: 5
+  - name: "STONE"
+    buy-price: 20
+    sell-price: 10
+  - name: "OAK_LOG"
+    buy-price: 5
+    sell-price: 2
+  - name: "GRAVEL"
+    buy-price: 3
+    sell-price: 2
+  - name: "COBBLED_DEEPSLATE"
+    buy-price: 25
+    sell-price: 15
+  - name: "REDSTONE_DUST"
+    buy-price: 30
+    sell-price: 20
+  - name: "SAND"
+    buy-price: 3
+    sell-price: 2
+  - name: "DIRT"
+    buy-price: 1
+    sell-price: 1
+  - name: "DIORITE"
+    buy-price: 5
+    sell-price: 3
+  - name: "ANDESITE"
+    buy-price: 4
+    sell-price: 2
+  - name: "OBSIDIAN"
+    buy-price: 60
+    sell-price: 30
+  - name: "COAL"
+    buy-price: 5
+    sell-price: 2
+  - name: "IRON_INGOT"
+    buy-price: 15
+    sell-price: 10
+  - name: "COPPER_INGOT"
+    buy-price: 5
+    sell-price: 2
+  - name: "WHEAT"
+    buy-price: 7
+    sell-price: 5

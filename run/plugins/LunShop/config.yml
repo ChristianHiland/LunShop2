@@ -1,0 +1,16 @@
+shop-items:
+  - name: "DIAMOND"
+    buy-price: 500
+    sell-price: 250
+  - name: "EMERALD"
+    buy-price: 300
+    sell-price: 150
+  - name: "COBBLESTONE"
+    buy-price: 10
+    sell-price: 5
+  - name: "STONE"
+    buy-price: 20
+    sell-price: 10
+  - name: "OAK_LOG"
+    buy-price: 5
+    sell-price: 2
