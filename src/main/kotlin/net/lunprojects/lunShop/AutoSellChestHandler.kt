@@ -48,6 +48,7 @@ class AutoSellChestHandler(private val plugin: LunShop, private val shopItems: L
             (state as? org.bukkit.block.TileState)?.persistentDataContainer?.set(chestKey, PersistentDataType.BYTE, 1.toByte())
             state.update()
             event.player.sendMessage("§aAuto-Sell Chest placed!")
+            startAutoSellTask()
         }
     }
 

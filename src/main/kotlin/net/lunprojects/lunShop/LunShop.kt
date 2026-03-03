@@ -1,8 +1,10 @@
 package net.lunprojects.lunShop
 
 import net.lunprojects.lunShop.commands.AdminEconomyHandler
+import net.lunprojects.lunShop.commands.BalanceCommand
 import net.lunprojects.lunShop.commands.PayCommand
 import net.lunprojects.lunShop.events.PlayerDataHandler
+import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType
@@ -36,12 +38,26 @@ class LunShop : JavaPlugin() {
         getCommand("shopChest")?.setExecutor(autoSellHandler)
         server.pluginManager.registerEvents(autoSellHandler, this)
 
+        // TEST THIS
+        // Setting up Balance Command
+        val balanceCommand = BalanceCommand(this)
+        getCommand("balance")?.setExecutor(autoSellHandler)
+        server.pluginManager.registerEvents(autoSellHandler, this)
+
         // TEST THIS: Add the ability to pay other players with your own money.
         val payCommand = PayCommand(this)
         getCommand("pay")?.setExecutor(payCommand)
 
-        // TODO: Add the ability to see your current balance with a scoreboard thing.
+        // TEST THIS
+        var leaderBoard = LeaderBoard(this)
+        server.pluginManager.registerEvents(leaderBoard, this)
+        Bukkit.getScheduler().runTaskTimer(this, Runnable {
+            for (player in Bukkit.getOnlinePlayers()) {
+                leaderBoard.updateScoreboard(player)
+            }
+        }, 0L, 100L) // Updates every 5 seconds (100 ticks)
         // TODO: Add Page support when the ShopItems become to big (In Size) so the player can click to the next page.
+        // TODO: Add balance command
 
 
     }
