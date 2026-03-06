@@ -50,3 +50,42 @@ shop-items:
   - name: "WHEAT"
     buy-price: 7
     sell-price: 5
+  - name: "LAPIS_LAZULI"
+    buy-price: 15
+    sell-price: 9
+  - name: "GRANITE"
+    buy-price: 5
+    sell-price: 2
+  - name: "GOLD_INGOT"
+    buy-price: 13
+    sell-price: 7
+  - name: "MOSSY_COBBLESTONE"
+    buy-price: 6
+    sell-price: 3
+  - name: "COARSE_DIRT"
+    buy-price: 3
+    sell-price: 2
+  - name: "SPRUCE_LOG"
+    buy-price: 10
+    sell-price: 5
+  - name: "OAK_LOG"
+    buy-price: 10
+    sell-price: 5
+  - name: "SPRUCE_LEAVES"
+    buy-price: 2
+    sell-price: 1
+  - name: "SPRUCE_SAPLING"
+    buy-price: 5
+    sell-price: 2
+  - name: "GUNPOWDER"
+    buy-price: 10
+    sell-price: 5
+  - name: "AMETHYST_SHARD"
+    buy-price: 20
+    sell-price: 10
+  - name: "AMETHYST_BLOCK"
+    buy-price: 25
+    sell-price: 15
+  - name: "FLINT"
+    buy-price: 5
+    sell-price: 2

@@ -26,9 +26,11 @@ class LeaderBoard(var plugin: LunShop) : Listener {
         val balance = plugin.getBalance(player)
 
         // Set the lines (Scores). Lower numbers are at the bottom
-        objective.getScore("§7--- Stats ---").score = 4
-        objective.getScore("§fBalance: §a$$balance").score = 3
-        objective.getScore("§7--------------").score = 2
+        objective.getScore(" ").score = 6
+        objective.getScore("§7--- Stats ---").score = 5
+        objective.getScore("§fBalance: §a$$balance").score = 4
+        objective.getScore("§7--------------").score = 3
+        objective.getScore(" ").score = 2
         objective.getScore("Website: lunprojects.net").score = 1
 
         player.scoreboard = scoreboard
@@ -42,11 +44,15 @@ class LeaderBoard(var plugin: LunShop) : Listener {
         for (player in Bukkit.getOnlinePlayers()) {
             val board = player.scoreboard
             val obj = board.getObjective("balance_board") ?: continue
+            val balance = plugin.getBalance(player)
 
             // Remove old scores and set new top 5 lines
-            topPlayers.forEachIndexed { index, topPlayer ->
-                obj.getScore("§e${index + 1}. ${topPlayer.name}: §a$${plugin.getBalance(topPlayer)}").score = 10 - index
-            }
+            obj.getScore(" ").score = 6
+            obj.getScore("§7--- Stats ---").score = 5
+            obj.getScore("§fBalance: §a$$balance").score = 4
+            obj.getScore("§7--------------").score = 3
+            obj.getScore(" ").score = 2
+            obj.getScore("Website: lunprojects.net").score = 1
         }
     }
 

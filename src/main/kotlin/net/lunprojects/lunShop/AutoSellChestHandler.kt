@@ -16,6 +16,7 @@ import org.bukkit.persistence.PersistentDataType
 
 class AutoSellChestHandler(private val plugin: LunShop, private val shopItems: List<ShopMenu.ShopItem>) : CommandExecutor, Listener {
     private val chestKey = NamespacedKey(plugin, "is_auto_sell_chest")
+    private val playerKey = NamespacedKey(plugin, "owner")
 
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): Boolean {
         if (sender is Player) {
@@ -45,27 +46,26 @@ class AutoSellChestHandler(private val plugin: LunShop, private val shopItems: L
         val item = event.itemInHand
         if (item.itemMeta?.persistentDataContainer?.has(chestKey, PersistentDataType.BYTE) == true) {
             val state = event.blockPlaced.state
+            val block = event.blockPlaced
+
+            // Setting chestKey, and Player name key
             (state as? org.bukkit.block.TileState)?.persistentDataContainer?.set(chestKey, PersistentDataType.BYTE, 1.toByte())
+            (state as? org.bukkit.block.TileState)?.persistentDataContainer?.set(playerKey, PersistentDataType.STRING, event.player.uniqueId.toString())
             state.update()
-            event.player.sendMessage("§aAuto-Sell Chest placed!")
-            startAutoSellTask()
+            plugin.autoSellChests.add(block.location)
+            event.player.sendMessage("§aAuto-Sell Chest placed & Linked!")
         }
     }
 
-    fun startAutoSellTask() {
-        Bukkit.getScheduler().runTaskTimer(plugin, Runnable {
-            for (player in Bukkit.getOnlinePlayers()) {
-                val block = player.location.block
-                val state = block.state as? org.bukkit.block.Chest ?: continue
-
-                if (state.persistentDataContainer.has(chestKey, PersistentDataType.BYTE)) {
-                    processSell(state, player)
-                }
-            }
-        }, 1200L, 1200L)
+    @EventHandler
+    fun onBlockBreak(event: BlockPlaceEvent) {
+        if (plugin.autoSellChests.contains(event.block.location)) {
+            plugin.autoSellChests.remove(event.block.location)
+            event.player.sendMessage("§eAuto-Sell Chest removed & Delinked.")
+        }
     }
 
-    private fun processSell(chest: org.bukkit.block.Chest, owner: Player) {
+    public fun processSell(chest: org.bukkit.block.Chest, owner: Player) {
         var totalProfit = 0.0
         val inventory = chest.inventory
 

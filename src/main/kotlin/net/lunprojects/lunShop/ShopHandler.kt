@@ -1,5 +1,7 @@
 package net.lunprojects.lunShop
 
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger.logger
+import net.lunprojects.lunShop.menus.TransactionMenu
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.command.Command
@@ -25,22 +27,106 @@ class ShopHandler(val shopItems: List<ShopMenu.ShopItem>, val plugin: LunShop) :
     @EventHandler
     fun onInventoryClick(event: InventoryClickEvent) {
         // Check if the inventory being clicked is the LunShop
-        val holder = event.inventory.holder as? ShopMenu ?: return
+        val holder = event.inventory.holder
         // Cancel the event so the player can't take the item
         event.isCancelled = true
 
         val slot = event.slot
-        val shopItem = holder.items.getOrNull(slot) ?: return
         val clickedItem = event.currentItem ?: return
         val player = event.whoClicked as Player
 
-        // Perform an action based on the item clicked
-        if (clickedItem.type != Material.BARRIER) {
-            if (event.isLeftClick) {
-                handleBuy(player, shopItem)
-            } else if (event.isRightClick) {
-                handleSell(player, shopItem)
+        // 1. Check if the player is in the MAIN SHOP
+        val shopHolder = event.inventory.holder as? ShopMenu
+        if (shopHolder != null) {
+            event.isCancelled = true // Prevent taking items
+
+            // Handle Page Navigation
+            if (slot == 18 && clickedItem.type == Material.ARROW) {
+                player.openInventory(ShopMenu(shopHolder.items, shopHolder.page - 1).inventory)
+                return
             }
+            if (slot == 26 && clickedItem.type == Material.ARROW) {
+                player.openInventory(ShopMenu(shopHolder.items, shopHolder.page + 1).inventory)
+                return
+            }
+
+            // Open Transaction Menu for items in slots 0-17
+            if (slot < 18 && clickedItem.type != Material.BARRIER) {
+                val itemIndex = slot + (shopHolder.page * 18)
+                val shopItem = shopHolder.items.getOrNull(itemIndex) ?: return
+                player.openInventory(TransactionMenu(shopItem).inventory)
+            }
+            return // Stop processing so we don't hit the next check
+        }
+
+        // Handling The Transaction Menu Events
+        val transHolder = event.inventory.holder as? TransactionMenu
+        if (transHolder != null) {
+            event.isCancelled = true
+            handleTransactionClick(event, transHolder, player)
+        }
+    }
+
+    private fun handleTransactionClick(event: InventoryClickEvent, holder: TransactionMenu, player: Player) {
+        when (event.slot) {
+            11 -> { // Subtract
+                if (holder.amount > 1) {
+                    plugin.logger.info("Dec Item Amount")
+                    player.openInventory(TransactionMenu(holder.item, holder.amount - 1).inventory)
+                }
+            }
+            15 -> { // Add
+                if (holder.amount < 64) {
+                    plugin.logger.info("Inc Item Amount")
+                    player.openInventory(TransactionMenu(holder.item, holder.amount + 1).inventory)
+                }
+            }
+            22 -> { // Confirm
+                // Scale your existing handleBuy logic by holder.amount
+                if (event.isLeftClick) executeBulkBuy(player, holder.item, holder.amount)
+                if (event.isRightClick) executeBulkSell(player, holder.item, holder.amount)
+
+                player.closeInventory()
+            }
+        }
+    }
+
+    private fun executeBulkBuy(player: Player, item: ShopMenu.ShopItem, amount: Int) {
+        val key = NamespacedKey(plugin, "player_balance")
+        val currentBalance = player.persistentDataContainer.getOrDefault(key, PersistentDataType.DOUBLE, 0.0)
+        val buyTotalPrice = item.buyPrice * amount
+        plugin.logger.info("Execute Bulk Buy")
+
+        if (currentBalance >= buyTotalPrice) {
+            // Setting player's new balance
+            val newBalance = currentBalance - buyTotalPrice
+            player.persistentDataContainer.set(key, PersistentDataType.DOUBLE, newBalance)
+
+            // Giving the item to the player
+            val material = Material.matchMaterial(item.name) ?: return
+            player.inventory.addItem(ItemStack(material, amount))
+            player.sendMessage("§aBought $amount ${item.name} for $${buyTotalPrice}! New balance: $$newBalance")
+        } else {
+            player.sendMessage("§cYou don't have enough money! You need $${buyTotalPrice - currentBalance} more.")
+        }
+    }
+
+    private fun executeBulkSell(player: Player, item: ShopMenu.ShopItem, amount: Int) {
+        val key = NamespacedKey(plugin, "player_balance")
+        val material = Material.matchMaterial(item.name) ?: return
+        val currentBalance = player.persistentDataContainer.getOrDefault(key, PersistentDataType.DOUBLE, 0.0)
+        val totalSellPrice = item.sellPrice * amount
+        plugin.logger.info("Execute Bulk Sell")
+
+        if (player.inventory.contains(material)) {
+            player.inventory.removeItem(ItemStack(material, amount))
+            val newBalance = currentBalance + totalSellPrice
+
+            // Update PDC Balance
+            player.persistentDataContainer.set(key, PersistentDataType.DOUBLE, newBalance)
+            player.sendMessage("§eSold $amount ${item.name} for $${totalSellPrice}! New balance: $$newBalance")
+        } else {
+            player.sendMessage("§cYou don't have any ${item.name} to sell!")
         }
     }
 
